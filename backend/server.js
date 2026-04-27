@@ -12,6 +12,26 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// ✅ TEST ENDPOINT - Add this here (before your routes)
+app.get('/api/test-db', async (req, res) => {
+  try {
+    const state = mongoose.connection.readyState;
+    const states = {
+      0: 'disconnected',
+      1: 'connected',
+      2: 'connecting',
+      3: 'disconnecting'
+    };
+    res.json({ 
+      mongoState: states[state],
+      readyState: state,
+      message: state === 1 ? '✅ MongoDB is connected!' : '❌ MongoDB is not connected'
+    });
+  } catch (err) {
+    res.json({ error: err.message });
+  }
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/expenses', expenseRoutes);
